@@ -1,0 +1,10 @@
+name = "fingerprint-worker"
+main = "src/index.js"
+compatibility_date = "2024-01-01"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "fingerprint"
+database_id = "88e432b1-c7e4-457a-8ad0-26660d0e5c5f"
+
+
