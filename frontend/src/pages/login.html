@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 500px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      .form-group {
+        margin-bottom: 15px;
+      }
+      label {
+        display: block;
+        margin-bottom: 5px;
+      }
+      input {
+        width: 100%;
+        padding: 8px;
+        box-sizing: border-box;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+      }
+      button {
+        padding: 10px 15px;
+        background: #0070f3;
+        color: white;
+        border: none;
+        cursor: pointer;
+        border-radius: 4px;
+        width: 100%;
+      }
+      button:hover {
+        background: #0051a8;
+      }
+      .error-message {
+        color: #e74c3c;
+        margin-top: 15px;
+        display: none;
+      }
+      .loading {
+        display: none;
+        text-align: center;
+        margin-top: 15px;
+      }
+      .spinner {
+        border: 3px solid rgba(0, 0, 0, 0.1);
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        border-left-color: #0070f3;
+        animation: spin 1s linear infinite;
+        display: inline-block;
+        vertical-align: middle;
+        margin-right: 10px;
+      }
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+    </style>
+    <script src="/config.js"></script>
+  </head>
+  <body>
+    <h1>Login</h1>
+    <form id="loginForm">
+      <div class="form-group">
+        <label for="username">Usuário:</label>
+        <input type="text" id="username" name="username" required>
+      </div>
+      <div class="form-group">
+        <label for="password">Senha:</label>
+        <input type="password" id="password" name="password" required>
+      </div>
+      <button type="submit">Entrar</button>
+    </form>
+
+    <div class="loading">
+      <div class="spinner"></div>
+      <span>Autenticando...</span>
+    </div>
+
+    <div class="error-message" id="errorMessage"></div>
+
+    <script>
+      const API_URL = CONFIG.API_URL;
+
+      document.getElementById('loginForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        // Mostrar loading e esconder mensagem de erro
+        document.querySelector('.loading').style.display = 'block';
+        document.getElementById('errorMessage').style.display = 'none';
+
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+
+        try {
+          const response = await fetch(`${API_URL}/api/login`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ username, password }),
+          });
+
+          // Esconder loading
+          document.querySelector('.loading').style.display = 'none';
+
+          if (response.ok) {
+            const data = await response.json();
+            // Salvar token no localStorage
+            localStorage.setItem('authToken', data.token);
+            localStorage.setItem('username', data.username);
+
+            // Redirecionar para o dashboard
+            window.location.href = 'dashboard.html';
+          } else {
+            const errorData = await response.json();
+            const errorMessage = document.getElementById('errorMessage');
+            errorMessage.textContent = errorData.error || 'Credenciais inválidas';
+            errorMessage.style.display = 'block';
+          }
+        } catch (error) {
+          // Esconder loading e mostrar erro
+          document.querySelector('.loading').style.display = 'none';
+          const errorMessage = document.getElementById('errorMessage');
+          errorMessage.textContent = 'Erro ao conectar com o servidor. Tente novamente.';
+          errorMessage.style.display = 'block';
+          console.error('Erro:', error);
+        }
+      });
+    </script>
+  </body>
+</html>

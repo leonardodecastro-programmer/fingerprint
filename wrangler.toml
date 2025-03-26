@@ -1,9 +1,0 @@
-name = "fingerprint-worker"
-main = "src/index.js"
-compatibility_date = "2023-10-30"
-compatibility_flags = ["nodejs_compat"]
-
-[[d1_databases]]
-binding = "DB"
-database_name = "fingerprint_db"
-database_id = "f025b5ed-e0a7-433e-a92e-52a0a62b2881"
